@@ -58,9 +58,7 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
 %
 %       If couplingtype='diffusive':
 %       $x_{n+1}^i=(1-\sigma)f(x_n^i)+\frac{\sigma}{k_i}\sum_j{A_{ij}(x_n^j-x_n^i)}$
-%       where $f(x)=r*x*(1-x)$
-%       
-%       If couplingtype='kaneko':
+%       Or if couplingtype='kaneko':
 %       $x_{n+1}^i=(1-\sigma)f(x_n^i)+\frac{\sigma}{k_i}\sum_j{A_{ij}f(x_n^j)}$
 %       where $f(x)=r*x*(1-x)$
 %       
@@ -77,9 +75,9 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
     nonodes=length(A(1,:));
     
     if couplingtype=='diffusive'
-        out=diffusivecalc(tslength,r,A,sigma);
+        out=diffusivecalc(tslength,r,A,sigma,nonodes);
     elseif couplingtype=='kaneko'
-        out=kanekocalc(tslength,r,A,sigma);
+        out=kanekocalc(tslength,r,A,sigma,nonodes);
     end
     
     %cut transient
@@ -94,7 +92,7 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
     
 end
 
-function out=diffusivecalc(tslength,r,A,sigma)
+function out=diffusivecalc(tslength,r,A,sigma,nonodes)
 %calculation when diffusive
     cond=1;
     while cond    
@@ -146,7 +144,7 @@ function out=diffusivecalc(tslength,r,A,sigma)
     end
 end
 
-function out=kanekocalc(tslength,r,A,sigma)
+function out=kanekocalc(tslength,r,A,sigma,nonodes)
 %calculation when diffusive
     cond=1;
     while cond    
