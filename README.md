@@ -30,6 +30,6 @@ For specific document of each item type in the Matlab/Octave command window: hel
 
 ICSMB, University of Aberdeen    
 
-(AV thanks to CNPq scholarship, Brazil)
+(AV thanks to CNPq (Brazil) for a scholarship)
 
 This toolbox is available free and with no warranty. Use it at your own risk.
