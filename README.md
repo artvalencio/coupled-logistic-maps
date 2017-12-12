@@ -1,5 +1,5 @@
 # coupled-systems-generator
-Functions that generate time-series of coupled systems of your choice.
+Toolbox of functions that generate time-series of coupled systems of your choice.
 This version is designed for Matlab/Octave.
 
 Completed:
