@@ -87,8 +87,8 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
         out(:,i)=normal(out(:,i));
     end
     %save
-    disp('saving to file');
-    save(filename,'out');
+%    disp('saving to file');
+%    save(filename,'out');
     
 end
 
@@ -143,8 +143,8 @@ function [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonode
         end
     end
     %weighted adjacency matrix
-    for i=1:length(A(:,1))
-        for j=1:length(A(1,:))
+    for i=1:nonodes
+        for j=1:nonodes
             if ~(deg(i)==0)
                 Atilde(i,j)=sigma*A(i,j)/deg(i);
             else
@@ -153,16 +153,26 @@ function [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonode
         end
     end
     %normalised degree
-    for i=1:length(A(:,1))
+    for i=1:nonodes
         normdeg(i)=0;
-        for j=1:length(A(1,:))
+        for j=1:nonodes
             normdeg(i)=normdeg(i)+Atilde(i,j);
         end
     end
     %normalised laplacian 
     laplacian=normdeg*eye-Atilde;
     %pseudo-inverse of the laplacian
-    pseudolaplacian=pinv(laplacian);
+    [V,D]=eig(laplacian);
+    pseudolaplacian(1:nonodes,1:nonodes)=0;
+    for i=1:nonodes
+        for j=1:nonodes
+            for n=1:nonodes
+                if abs(D(n,n))>10^-10
+                    pseudolaplacian(i,j)=pseudolaplacian(i,j)+V(i,n)*conj(V(j,n))/D(n,n);
+                end
+            end
+        end
+    end
 end
 
 function [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes)
@@ -216,8 +226,8 @@ function [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes)
         end
     end
     %weighted adjacency matrix
-    for i=1:length(A(:,1))
-        for j=1:length(A(1,:))
+    for i=1:nonodes
+        for j=1:nonodes
             if ~(deg(i)==0)
                 Atilde(i,j)=sigma*A(i,j)/deg(i);
             else
@@ -226,16 +236,26 @@ function [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes)
         end
     end
     %normalised degree
-    for i=1:length(A(:,1))
+    for i=1:nonodes
         normdeg(i)=0;
-        for j=1:length(A(1,:))
+        for j=1:nonodes
             normdeg(i)=normdeg(i)+Atilde(i,j);
         end
     end
     %normalised laplacian
     laplacian=normdeg*eye-Atilde;
     %pseudo-inverse of the laplacian
-    pseudolaplacian=pinv(laplacian);
+    [V,D]=eig(laplacian);
+    pseudolaplacian(1:nonodes,1:nonodes)=0;
+    for i=1:nonodes
+        for j=1:nonodes
+            for n=1:nonodes
+                if abs(D(n,n))>10^-10
+                    pseudolaplacian(i,j)=pseudolaplacian(i,j)+V(i,n)*conj(V(j,n))/D(n,n);
+                end
+            end
+        end
+    end
 end
 
 function out=normal(x)
