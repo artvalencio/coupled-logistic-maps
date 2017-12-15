@@ -1,4 +1,4 @@
-function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
+function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
 %COUPLEDLOGISTIC Generates time-series dynamics for coupled logistic networks of
 %parameter r with homogeneous coupling strength sigma
 %--------------------------------
@@ -17,7 +17,7 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
 %Usage examples:
 % - Serial:
 %       A=[0 1 0 0; 0 0 1 0; 0 0 0 1; 0 0 0 0];
-%       genseries(1e7,4,A,0.2,'diffusive','serial.mat');
+%       [x,L,pL]=coupledlogistic(1e7,4,A,0.2,'diffusive','serial.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
@@ -28,7 +28,7 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
 %
 % - Parallel:
 %       A=[0 1 1 0; 0 0 0 1; 0 0 0 1; 0 0 0 0];
-%       genseries(1e7,4,A,0.1,'diffusive','parallel.mat');
+%       [x,L,pL]=coupledlogistic(1e7,4,A,0.1,'diffusive','parallel.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
@@ -42,7 +42,7 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
 %
 % - Wheatstone-bridge:
 %       A=[0 1 1 0; 0 0 1 1; 0 0 0 1; 0 0 0 0];
-%       genseries(1e7,4,A,0.15,'diffusive','wheatstone.mat');
+%       [x,L,pL]=coupledlogistic(1e7,4,A,0.15,'diffusive','wheatstone.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
@@ -63,7 +63,7 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
 %       where $f(x)=r*x*(1-x)$
 %       
 %--------------------------------
-%(C) Arthur Valencio(1)* and Murilo Baptista(1), 11 December 2017
+%(C) Arthur Valencio(1)* and Murilo Baptista(1), 15 December 2017
 %incorporating discussions with Nicolas Rubido(2)
 %(1)ICSMB, University of Aberdeen,UK
 %(2)Universidad de la Republica, Uruguay
@@ -75,9 +75,9 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
     nonodes=length(A(1,:));
     
     if couplingtype=='diffusive'
-        out=diffusivecalc(tslength,r,A,sigma,nonodes);
+        [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonodes);
     elseif couplingtype=='kaneko'
-        out=kanekocalc(tslength,r,A,sigma,nonodes);
+        [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes);
     end
     
     %cut transient
@@ -92,7 +92,7 @@ function out=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
     
 end
 
-function out=diffusivecalc(tslength,r,A,sigma,nonodes)
+function [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonodes)
 %calculation when diffusive
     cond=1;
     while cond    
@@ -110,16 +110,16 @@ function out=diffusivecalc(tslength,r,A,sigma,nonodes)
             for k=1:nonodes
                     %calc coupling    
                     sumterm=0;
-                    deg=0;
+                    deg(k)=0;
                     for l=1:nonodes
                         if A(k,l)==1
                             sumterm=sumterm+out(n,l)-out(n,k);
-                            deg=deg+1;
+                            deg(k)=deg(k)+1;
                         end
                     end
                     %calc next step
-                    if deg>0
-                        sumterm=sumterm/deg;
+                    if deg(k)>0
+                        sumterm=sumterm/deg(k);
                         out(n+1,k)=(1-sigma)*r*out(n,k)*(1-out(n,k))+sigma*sumterm;
                     else %deg=0 means it's an input node, so calc only logistic dynamics
                         out(n+1,k)=r*out(n,k)*(1-out(n,k));
@@ -142,9 +142,30 @@ function out=diffusivecalc(tslength,r,A,sigma,nonodes)
             disp('recalculating');
         end
     end
+    %weighted adjacency matrix
+    for i=1:length(A(:,1))
+        for j=1:length(A(1,:))
+            if ~(deg(i)==0)
+                Atilde(i,j)=sigma*A(i,j)/deg(i);
+            else
+                Atilde(i,j)=0;
+            end
+        end
+    end
+    %normalised degree
+    for i=1:length(A(:,1))
+        normdeg(i)=0;
+        for j=1:length(A(1,:))
+            normdeg(i)=normdeg(i)+Atilde(i,j);
+        end
+    end
+    %normalised laplacian 
+    laplacian=normdeg*eye-Atilde;
+    %pseudo-inverse of the laplacian
+    pseudolaplacian=pinv(laplacian);
 end
 
-function out=kanekocalc(tslength,r,A,sigma,nonodes)
+function [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes)
 %calculation when diffusive
     cond=1;
     while cond    
@@ -162,16 +183,16 @@ function out=kanekocalc(tslength,r,A,sigma,nonodes)
             for k=1:nonodes
                     %calc coupling    
                     sumterm=0;
-                    deg=0;
+                    deg(k)=0;
                     for l=1:nonodes
                         if A(k,l)==1
                             sumterm=sumterm+r*out(n,l)*(1-out(n,l));
-                            deg=deg+1;
+                            deg(k)=deg(k)+1;
                         end
                     end
                     %calc next step
-                    if deg>0
-                        sumterm=sumterm/deg;
+                    if deg(k)>0
+                        sumterm=sumterm/deg(k);
                         out(n+1,k)=(1-sigma)*r*out(n,k)*(1-out(n,k))+sigma*sumterm;
                     else %deg=0 means it's an input node, so calc only logistic dynamics
                         out(n+1,k)=r*out(n,k)*(1-out(n,k));
@@ -194,6 +215,27 @@ function out=kanekocalc(tslength,r,A,sigma,nonodes)
             disp('recalculating');
         end
     end
+    %weighted adjacency matrix
+    for i=1:length(A(:,1))
+        for j=1:length(A(1,:))
+            if ~(deg(i)==0)
+                Atilde(i,j)=sigma*A(i,j)/deg(i);
+            else
+                Atilde(i,j)=0;
+            end
+        end
+    end
+    %normalised degree
+    for i=1:length(A(:,1))
+        normdeg(i)=0;
+        for j=1:length(A(1,:))
+            normdeg(i)=normdeg(i)+Atilde(i,j);
+        end
+    end
+    %normalised laplacian
+    laplacian=normdeg*eye-Atilde;
+    %pseudo-inverse of the laplacian
+    pseudolaplacian=pinv(laplacian);
 end
 
 function out=normal(x)
