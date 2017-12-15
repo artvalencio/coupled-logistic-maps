@@ -3,6 +3,7 @@ Toolbox of functions that generate time-series of coupled systems of your choice
 This version is designed for Matlab/Octave.
 
 Completed:
+* adjacencygen.m: quickly build the adjacency matrix for networks of interest (linear, parallel, wheatstone, distance-3)
 * coupledlogistic.m:  build the time-series for a system of coupled Logistic maps
 
 Under development:
@@ -22,6 +23,7 @@ Under development:
 * coupledvanderpol.m: the same for coupled Van der Pol oscillators
 * coupledoscillators.m: the same for coupled oscillators (may or not be Kuramoto)
 
+Note: for all the systems generated the user also gets the weighted laplacian and its pseudo-inverse.
 
 For specific document of each item type in the Matlab/Octave command window: help [function-name]
 
