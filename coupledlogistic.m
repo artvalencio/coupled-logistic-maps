@@ -1,14 +1,14 @@
 function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
-%COUPLEDLOGISTIC Generates time-series dynamics for coupled logistic networks of
-%parameter r with homogeneous coupling strength sigma
+%COUPLEDLOGISTIC Generates time-series dynamics for coupled logistic networks of parameter r
 %--------------------------------
 %Inputs:
 %       tslength: length of the time-series (number of points)
-%       r: logistic map free parameter
+%       r: logistic map free parameter. Can be a single number (all nodes
+%          are equal) or a vector (specifying different r for each node). 
 %       A: adjacency matrix
 %       sigma: coupling strength
 %       couplingtype: one of the options: 'diffusive' or 'kaneko'
-%       filename: name of output file
+%       filename: name of output file (optional)
 %--------------------------------
 %Output:
 %       out: each column is time-series for a node 
@@ -74,6 +74,11 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
     disp('Generating time-series');
     nonodes=length(A(1,:));
     
+    if length(r)==1
+        r(1:nonodes)=r;
+    end
+    
+    
     if couplingtype=='diffusive'
         [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonodes);
     elseif couplingtype=='kaneko'
@@ -87,8 +92,10 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
         out(:,i)=normal(out(:,i));
     end
     %save
-%    disp('saving to file');
-%    save(filename,'out');
+    if (exist('filename','var')) 
+        disp('saving to file');
+        save(filename,'out');
+    end
     
 end
 
@@ -120,9 +127,9 @@ function [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonode
                     %calc next step
                     if deg(k)>0
                         sumterm=sumterm/deg(k);
-                        out(n+1,k)=(1-sigma)*r*out(n,k)*(1-out(n,k))+sigma*sumterm;
+                        out(n+1,k)=(1-sigma)*r(k)*out(n,k)*(1-out(n,k))+sigma*sumterm;
                     else %deg=0 means it's an input node, so calc only logistic dynamics
-                        out(n+1,k)=r*out(n,k)*(1-out(n,k));
+                        out(n+1,k)=r(k)*out(n,k)*(1-out(n,k));
                     end
                     
                     %error: repeat for new initial cond
@@ -196,16 +203,16 @@ function [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes)
                     deg(k)=0;
                     for l=1:nonodes
                         if A(k,l)==1
-                            sumterm=sumterm+r*out(n,l)*(1-out(n,l));
+                            sumterm=sumterm+r(k)*out(n,l)*(1-out(n,l));
                             deg(k)=deg(k)+1;
                         end
                     end
                     %calc next step
                     if deg(k)>0
                         sumterm=sumterm/deg(k);
-                        out(n+1,k)=(1-sigma)*r*out(n,k)*(1-out(n,k))+sigma*sumterm;
+                        out(n+1,k)=(1-sigma)*r(k)*out(n,k)*(1-out(n,k))+sigma*sumterm;
                     else %deg=0 means it's an input node, so calc only logistic dynamics
-                        out(n+1,k)=r*out(n,k)*(1-out(n,k));
+                        out(n+1,k)=r(k)*out(n,k)*(1-out(n,k));
                     end
                     
                     %error: repeat for new initial cond
