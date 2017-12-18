@@ -7,21 +7,7 @@ Completed:
 * coupledlogistic.m:  build the time-series for a system of coupled Logistic maps
 
 Under development:
-* coupledshift.m: the same for coupled Bernoulli shift maps
-* coupledtent.m: the same for coupled tent maps
-* coupledstandard.m: the same for coupled (Chirikov) standard maps (kicked rotor)
-* coupledikeda.m: the same for coupled Ikeda maps
-* coupledarnoldtongue.m: the same for coupled Arnold tongue maps
-* coupledkaplan.m: the same for coupled Kaplan-Yorke maps
-* coupledgauss.m: the same for coupled Gauss maps
-* coupledcomplexsquare.m: the same for coupled Complex Squaring maps
-* coupledlorentz.m: the same for coupled Lorentz systems
-* coupledhenon.m: the same for coupled Henon maps
-* coupledrossler.m: the same for coupled Rossler systems
-* coupledduffing.m: the same for coupled Duffing systems
-* coupledchua.m: the same for coupled Chua circuit systems
-* coupledvanderpol.m: the same for coupled Van der Pol oscillators
-* coupledoscillators.m: the same for coupled oscillators (may or not be Kuramoto)
+* coupledlogisterr.m: build the time-series for a system of coupled Logistic maps with a stochastic dynamical error
 
 Note: for all the systems generated the user also gets the weighted laplacian and its pseudo-inverse.
 
