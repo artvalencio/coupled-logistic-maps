@@ -57,9 +57,9 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
 %LaTeX expression:
 %
 %       If couplingtype='diffusive':
-%       $x_{n+1}^i=(1-\sigma)f(x_n^i)+\frac{\sigma}{k_i}\sum_j{A_{ij}(x_n^j-x_n^i)}$
+%       $x_{n+1}^i=(1-\sigma)f(x_n^i)+\frac{\sigma}{k_i}\sum_j{A_{ji}(x_n^j-x_n^i)}$
 %       Or if couplingtype='kaneko':
-%       $x_{n+1}^i=(1-\sigma)f(x_n^i)+\frac{\sigma}{k_i}\sum_j{A_{ij}f(x_n^j)}$
+%       $x_{n+1}^i=(1-\sigma)f(x_n^i)+\frac{\sigma}{k_i}\sum_j{A_{ji}f(x_n^j)}$
 %       where $f(x)=r*x*(1-x)$
 %       
 %--------------------------------
@@ -79,9 +79,9 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
     end
     
     
-    if couplingtype=='diffusive'
+    if strcmp(couplingtype,'diffusive')
         [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonodes);
-    elseif couplingtype=='kaneko'
+    elseif strcmp(couplingtype,'kaneko')
         [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes);
     end
     
@@ -119,7 +119,7 @@ function [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonode
                     sumterm=0;
                     deg(k)=0;
                     for l=1:nonodes
-                        if A(k,l)==1
+                        if A(l,k)==1
                             sumterm=sumterm+out(n,l)-out(n,k);
                             deg(k)=deg(k)+1;
                         end
@@ -202,7 +202,7 @@ function [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes)
                     sumterm=0;
                     deg(k)=0;
                     for l=1:nonodes
-                        if A(k,l)==1
+                        if A(l,k)==1
                             sumterm=sumterm+r(k)*out(n,l)*(1-out(n,l));
                             deg(k)=deg(k)+1;
                         end
