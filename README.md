@@ -8,7 +8,7 @@ Functions:
 
 * adjacencygen.m: quickly build the adjacency matrix for networks of interest (linear, parallel, wheatstone, distance-3)
 * coupledlogistic.m:  build the time-series for a system of coupled Logistic maps
-* coupledlogisterr.m: build the time-series for a system of coupled Logistic maps with a stochastic dynamical error
+* noisycoupledlogist.m: build the time-series for a system of coupled Logistic maps with a stochastic noise in the dynamical process
 
 Coupling options:
 
