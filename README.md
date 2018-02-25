@@ -32,7 +32,7 @@ This toolbox is available as is, without any warranty. Use it at your own risk.
 
 If useful, please cite:
 
-Arthur Valencio and Murilo S. Baptista. Coupled Logistic Maps: functions for generating the time-series from networks of coupled logistic systems. Open source codes for Matlab. 2018. Available at:https://github.com/artvalencio/coupled-logistic-maps.
+Arthur Valencio and Murilo S. Baptista. Coupled Logistic Maps: functions for generating the time-series from networks of coupled logistic systems. Open source codes for Matlab. 2018. Available at: https://github.com/artvalencio/coupled-logistic-maps.
 
 Bibtex entry:
 @misc{cami, author={Valencio, Arthur and Baptista, Murilo da Silva}, title={Coupled Logistic Maps: functions for generating the time-series from networks of coupled logistic systems}, note={Open source codes for Matlab. Available at \url{https://github.com/artvalencio/coupled-logistic-maps}.}, year={2018} }
