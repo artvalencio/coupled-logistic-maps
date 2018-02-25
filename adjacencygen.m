@@ -38,8 +38,6 @@ function A=adjacencygen(type,nodes)
 %%(C) Arthur Valencio(1)* and Murilo Baptista(1), 15 December 2017
 %(1)ICSMB, University of Aberdeen,UK
 %*Support: CNPq, Brazil
-%--------------------------------
-%If useful, please cite: 
 
 
 if strcmp(type,'serial')
