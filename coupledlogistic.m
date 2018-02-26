@@ -69,9 +69,7 @@ function [out]=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
 %       
 %--------------------------------
 %(C) Arthur Valencio(1)* and Murilo Baptista(1), 15 December 2017
-%incorporating discussions with Nicolas Rubido(2)
 %   (1)ICSMB, University of Aberdeen,UK
-%   (2)Universidad de la Republica, Uruguay
 %  *Support: CNPq (Brazil)
     
     disp('Generating time-series');
