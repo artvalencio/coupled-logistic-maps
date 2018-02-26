@@ -8,12 +8,12 @@ Functions:
 
 * adjacencygen.m: quickly build the adjacency matrix for networks of interest (linear, parallel, wheatstone, distance-3)
 * coupledlogistic.m:  build the time-series for a system of coupled Logistic maps
-* noisycoupledlogist.m: build the time-series for a system of coupled Logistic maps with a stochastic noise in the dynamical process
+* noisycoupledlogistic.m: build the time-series for a system of coupled Logistic maps with a stochastic noise in the dynamical process
 
 Coupling options:
 
 * diffuse: linear diffusive coupling with the adjacent node (i.e., of the form (x(j)-x(i), j representing the neighbour node),
-* kaneko: kano coupling with the adjacent node (i.e., of the form f(x(j)), j representing the neighbour node, f(x) the logistic function)
+* kaneko: Kaneko coupling with the adjacent node (i.e., of the form f(x(j)), j representing the neighbour node, f(x) the logistic function)
 
 ---------------------------------
 
