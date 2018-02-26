@@ -1,4 +1,4 @@
-function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
+function [out]=coupledlogistic(tslength,r,A,sigma,couplingtype,filename)
 %COUPLEDLOGISTIC Generates time-series dynamics for coupled logistic networks of parameter r
 %--------------------------------
 %Inputs:
@@ -15,9 +15,14 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
 %            described in the adjacency matrix
 %--------------------------------
 %Usage examples:
+%   - Simple X->Y system:
+%       A=[0,1;0,0];
+%       [x]=coupledlogistic(1e5,4,A,0.2,'diffusive');
+%
+%
 % - Serial:
 %       A=[0 1 0 0; 0 0 1 0; 0 0 0 1; 0 0 0 0];
-%       [x,L,pL]=coupledlogistic(1e7,4,A,0.2,'diffusive','serial.mat');
+%       [x]=coupledlogistic(1e7,4,A,0.2,'diffusive','serial.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
@@ -28,7 +33,7 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
 %
 % - Parallel:
 %       A=[0 1 1 0; 0 0 0 1; 0 0 0 1; 0 0 0 0];
-%       [x,L,pL]=coupledlogistic(1e7,4,A,0.1,'diffusive','parallel.mat');
+%       [x]=coupledlogistic(1e7,4,A,0.1,'diffusive','parallel.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
@@ -42,7 +47,7 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
 %
 % - Wheatstone-bridge:
 %       A=[0 1 1 0; 0 0 1 1; 0 0 0 1; 0 0 0 0];
-%       [x,L,pL]=coupledlogistic(1e7,4,A,0.15,'diffusive','wheatstone.mat');
+%       [x]=coupledlogistic(1e7,4,A,0.15,'diffusive','wheatstone.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
@@ -65,11 +70,9 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
 %--------------------------------
 %(C) Arthur Valencio(1)* and Murilo Baptista(1), 15 December 2017
 %incorporating discussions with Nicolas Rubido(2)
-%(1)ICSMB, University of Aberdeen,UK
-%(2)Universidad de la Republica, Uruguay
-%*Support: CNPq, Brazil
-%--------------------------------
-%If useful, please cite: 
+%   (1)ICSMB, University of Aberdeen,UK
+%   (2)Universidad de la Republica, Uruguay
+%  *Support: CNPq (Brazil)
     
     disp('Generating time-series');
     nonodes=length(A(1,:));
@@ -80,9 +83,9 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
     
     
     if strcmp(couplingtype,'diffusive')
-        [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonodes);
+        [out]=diffusivecalc(tslength,r,A,sigma,nonodes);
     elseif strcmp(couplingtype,'kaneko')
-        [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes);
+        [out]=kanekocalc(tslength,r,A,sigma,nonodes);
     end
     
     %cut transient
@@ -99,11 +102,13 @@ function [out,laplacian,pseudolaplacian]=coupledlogistic(tslength,r,A,sigma,coup
     
 end
 
-function [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonodes)
+function [out]=diffusivecalc(tslength,r,A,sigma,nonodes)
 %calculation when diffusive
     cond=1;
+    count=0;
     while cond    
         temp=0;
+        count=count+1;
         %initial cond
         out(1,1:nonodes)=rand(1,nonodes);
         out(2:tslength+10000,1:nonodes)=NaN;
@@ -148,44 +153,20 @@ function [out,laplacian,pseudolaplacian]=diffusivecalc(tslength,r,A,sigma,nonode
         else
             disp('recalculating');
         end
-    end
-    %weighted adjacency matrix
-    for i=1:nonodes
-        for j=1:nonodes
-            if ~(deg(i)==0)
-                Atilde(i,j)=sigma*A(i,j)/deg(i);
-            else
-                Atilde(i,j)=0;
-            end
+        disp(count)
+        if count>10
+            break;
         end
     end
-    %normalised degree
-    for i=1:nonodes
-        normdeg(i)=0;
-        for j=1:nonodes
-            normdeg(i)=normdeg(i)+Atilde(i,j);
-        end
-    end
-    %normalised laplacian 
-    laplacian=normdeg*eye-Atilde;
-    %pseudo-inverse of the laplacian
-    [V,D]=eig(laplacian);
-    pseudolaplacian(1:nonodes,1:nonodes)=0;
-    for i=1:nonodes
-        for j=1:nonodes
-            for n=1:nonodes
-                if abs(D(n,n))>10^-10
-                    pseudolaplacian(i,j)=pseudolaplacian(i,j)+V(i,n)*conj(V(j,n))/D(n,n);
-                end
-            end
-        end
-    end
+   
 end
 
-function [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes)
+function [out]=kanekocalc(tslength,r,A,sigma,nonodes)
 %calculation when diffusive
     cond=1;
-    while cond    
+    count=0;
+    while cond
+        count=count+1;
         temp=0;
         %initial cond
         out(1,1:nonodes)=rand(1,nonodes);
@@ -231,38 +212,12 @@ function [out,laplacian,pseudolaplacian]=kanekocalc(tslength,r,A,sigma,nonodes)
         else
             disp('recalculating');
         end
-    end
-    %weighted adjacency matrix
-    for i=1:nonodes
-        for j=1:nonodes
-            if ~(deg(i)==0)
-                Atilde(i,j)=sigma*A(i,j)/deg(i);
-            else
-                Atilde(i,j)=0;
-            end
+        disp(count)
+        if count>10
+            break;
         end
     end
-    %normalised degree
-    for i=1:nonodes
-        normdeg(i)=0;
-        for j=1:nonodes
-            normdeg(i)=normdeg(i)+Atilde(i,j);
-        end
-    end
-    %normalised laplacian
-    laplacian=normdeg*eye-Atilde;
-    %pseudo-inverse of the laplacian
-    [V,D]=eig(laplacian);
-    pseudolaplacian(1:nonodes,1:nonodes)=0;
-    for i=1:nonodes
-        for j=1:nonodes
-            for n=1:nonodes
-                if abs(D(n,n))>10^-10
-                    pseudolaplacian(i,j)=pseudolaplacian(i,j)+V(i,n)*conj(V(j,n))/D(n,n);
-                end
-            end
-        end
-    end
+    
 end
 
 function out=normal(x)
