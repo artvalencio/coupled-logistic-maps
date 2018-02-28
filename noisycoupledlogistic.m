@@ -17,7 +17,7 @@ function [out]=noisycoupledlogistic(tslength,r,A,sigma,couplingtype,errlvl,filen
 %Usage examples:
 % - Simple X->Y system:
 %       A=[0 1; 0 0];
-%       [x]=coupledlogistic(1e6,4,A,0.2,'diffusive',0.1,'coupllogistts.mat');
+%       [x]=noisycoupledlogistic(1e6,4,A,0.2,'diffusive',0.1,'coupllogistts.mat');
 %
 %        (The dynamics of each node is a r=4 logistic map.
 %        Each link is a linear diffusive coupling with strength 0.2.
@@ -27,7 +27,7 @@ function [out]=noisycoupledlogistic(tslength,r,A,sigma,couplingtype,errlvl,filen
 %
 % - Serial:
 %       A=[0 1 0 0; 0 0 1 0; 0 0 0 1; 0 0 0 0];
-%       [x]=coupledlogistic(1e6,4,A,0.2,'diffusive',0.1,'serial.mat');
+%       [x]=noisycoupledlogistic(1e6,4,A,0.2,'diffusive',0.1,'serial.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
@@ -39,7 +39,7 @@ function [out]=noisycoupledlogistic(tslength,r,A,sigma,couplingtype,errlvl,filen
 %
 % - Parallel:
 %       A=[0 1 1 0; 0 0 0 1; 0 0 0 1; 0 0 0 0];
-%       [x]=coupledlogistic(1e6,4,A,0.1,'diffusive',0.1,'parallel.mat');
+%       [x]=noisycoupledlogistic(1e6,4,A,0.1,'diffusive',0.1,'parallel.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
@@ -54,7 +54,7 @@ function [out]=noisycoupledlogistic(tslength,r,A,sigma,couplingtype,errlvl,filen
 %
 % - Wheatstone-bridge:
 %       A=[0 1 1 0; 0 0 1 1; 0 0 0 1; 0 0 0 0];
-%       [x]=coupledlogistic(1e6,4,A,0.15,'diffusive',0.1,'wheatstone.mat');
+%       [x]=noisycoupledlogistic(1e6,4,A,0.15,'diffusive',0.1,'wheatstone.mat');
 %        
 %       (This adjacency matrix A defines a system with nodes [i] connected
 %        as: 
